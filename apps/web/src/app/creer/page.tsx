@@ -379,16 +379,7 @@ export default function CreerCollectePage() {
                           <span>Téléverser une image</span>
                           <input name="photoUrl" type="file" accept="image/*" className="sr-only" onChange={handleImageChange} />
                         </label>
-                        <span className="text-slate-400 text-xs">OU</span>
-                        <button 
-                          type="button"
-                          onClick={handleGenerateImage}
-                          className="text-indigo-500 font-bold hover:underline flex items-center gap-1"
-                        >
-                          ✨ Créer avec l'IA
-                        </button>
                       </div>
-                      <p className="text-xs text-slate-500 mt-2">L'IA générera une image parfaite basée sur votre titre.</p>
                     </div>
                   )}
                 </div>

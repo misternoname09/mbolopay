@@ -1,6 +1,6 @@
 // ─── Mbolo Pay — API Helper & Utilities ─────────────────────────────────────
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:3003';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3003';
 
 // ─── Auth helpers ────────────────────────────────────────────────────────────
 
