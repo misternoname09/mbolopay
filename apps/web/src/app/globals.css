@@ -1,0 +1,225 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #1E3A8A;
+  --color-primary-light: #2563EB;
+  --color-primary-dark: #1E40AF;
+  --color-secondary: #0F172A;
+  --color-accent: #F59E0B;
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  --shadow-premium: 0 50px 100px -20px rgba(50, 50, 93, 0.1), 0 30px 60px -30px rgba(0, 0, 0, 0.15), inset 0 -2px 6px 0 rgba(10, 37, 64, 0.05);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0F172A;
+  --primary: #1E3A8A;
+  --primary-foreground: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #0F172A;
+  --border: #E2E8F0;
+  --ring: #1E3A8A;
+  --muted-foreground: #64748b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #020617;
+    --foreground: #F8FAFC;
+    --primary: #2563EB;
+    --primary-foreground: #ffffff;
+    --card: #0F172A;
+    --card-foreground: #F8FAFC;
+    --border: #1E293B;
+    --ring: #2563EB;
+    --muted-foreground: #94a3b8;
+  }
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Glass Effects ────────────────────────────────────────────────────────── */
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card {
+  @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-800/20 shadow-2xl;
+}
+
+/* ─── Text Effects ─────────────────────────────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, #1A6B3C 0%, #248a4e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────────────── */
+
+.btn-premium {
+  @apply bg-primary text-white font-bold py-3 px-8 rounded-2xl transition-all duration-500 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-95;
+}
+
+.btn-outline {
+  @apply border-2 border-slate-200 dark:border-slate-700 font-bold py-3 px-8 rounded-2xl transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800 hover:-translate-y-0.5;
+}
+
+.btn-ghost {
+  @apply font-semibold py-2 px-4 rounded-xl transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-800;
+}
+
+/* ─── Badge ────────────────────────────────────────────────────────────────── */
+
+.badge-verified {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-[10px] font-black uppercase tracking-widest;
+}
+
+.badge-category {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold;
+}
+
+.badge-urgence {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 text-xs font-bold animate-pulse;
+}
+
+.badge-status {
+  @apply px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest;
+}
+
+.badge-status-active {
+  @apply bg-green-100 text-green-600;
+}
+
+.badge-status-pending {
+  @apply bg-yellow-100 text-yellow-600;
+}
+
+.badge-status-closed {
+  @apply bg-slate-100 text-slate-500;
+}
+
+.badge-status-reported {
+  @apply bg-red-100 text-red-600;
+}
+
+/* ─── Progress Bar ─────────────────────────────────────────────────────────── */
+
+.progress-bar {
+  @apply w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-1000 ease-out;
+}
+
+/* ─── Stepper ──────────────────────────────────────────────────────────────── */
+
+.stepper-dot {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300;
+}
+
+.stepper-dot-active {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 bg-primary text-white shadow-lg shadow-primary/30 scale-110;
+}
+
+.stepper-dot-done {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 bg-primary text-white;
+}
+
+.stepper-dot-inactive {
+  @apply w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 bg-slate-100 dark:bg-slate-800 text-slate-400;
+}
+
+.stepper-line {
+  @apply flex-1 h-0.5 mx-2 transition-all duration-500;
+}
+
+.stepper-line-active {
+  @apply flex-1 h-0.5 mx-2 transition-all duration-500 bg-primary;
+}
+
+.stepper-line-inactive {
+  @apply flex-1 h-0.5 mx-2 transition-all duration-500 bg-slate-200 dark:bg-slate-700;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────────── */
+
+.card-collecte {
+  @apply bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+/* ─── Inputs ───────────────────────────────────────────────────────────────── */
+
+.input-base {
+  @apply block w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all duration-200;
+}
+
+/* ─── Animations ───────────────────────────────────────────────────────────── */
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes textShine {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-text-shine {
+  background-size: 200% auto;
+  animation: textShine 5s ease-in-out infinite alternate;
+}
+
+/* ─── Mobile menu ──────────────────────────────────────────────────────────── */
+
+.mobile-menu-overlay {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300;
+}
+
+.mobile-menu-panel {
+  @apply fixed top-0 right-0 h-full w-[280px] bg-white dark:bg-slate-900 z-50 shadow-2xl transition-transform duration-300 ease-out;
+}
+
+/* ─── Print ────────────────────────────────────────────────────────────────── */
+
+@media print {
+  header, footer, .no-print, .btn-premium {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+  }
+}

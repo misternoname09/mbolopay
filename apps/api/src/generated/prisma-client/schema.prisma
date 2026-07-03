@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma-client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CollecteStatus {
+  PENDING
+  ACTIVE
+  CLOSED
+  REPORTED
+}
+
+enum Category {
+  SANTE
+  RELIGION
+  EDUCATION
+  SPORT
+  EVENEMENT
+  COTISATION
+  CADEAU
+  URGENCE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+model User {
+  id        String     @id @default(uuid())
+  phone     String     @unique // Format +221XXXXXXXXX
+  name      String?
+  role      Role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  collectes Collecte[]
+  retraits  Retrait[]
+}
+
+model Collecte {
+  id            String         @id @default(uuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  slug          String         @unique
+  title         String         @db.VarChar(80)
+  description   String         @db.Text
+  category      Category
+  targetXof     Int // Objective in XOF
+  collectedXof  Int            @default(0)
+  endDate       DateTime
+  status        CollecteStatus @default(PENDING)
+  photoUrl      String?
+  verifiedBadge Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  dons         Don[]
+  updates      Update[]
+  signalements Signalement[]
+  retraits     Retrait[]
+}
+
+model Don {
+  id            String        @id @default(uuid())
+  collecteId    String
+  collecte      Collecte      @relation(fields: [collecteId], references: [id])
+  amountXof     Int
+  paymentMethod String // wave, om, card
+  anonymous     Boolean       @default(false)
+  donorName     String? // Optional name if not anonymous
+  status        PaymentStatus @default(PENDING)
+  transactionId String?       @unique // From PayDunya
+  createdAt     DateTime      @default(now())
+}
+
+model Retrait {
+  id          String           @id @default(uuid())
+  collecteId  String
+  collecte    Collecte         @relation(fields: [collecteId], references: [id])
+  userId      String
+  user        User             @relation(fields: [userId], references: [id])
+  amountXof   Int
+  method      String // wave, om, bank
+  status      WithdrawalStatus @default(PENDING)
+  processedAt DateTime?
+  createdAt   DateTime         @default(now())
+}
+
+model Update {
+  id         String   @id @default(uuid())
+  collecteId String
+  collecte   Collecte @relation(fields: [collecteId], references: [id])
+  content    String   @db.Text
+  createdAt  DateTime @default(now())
+}
+
+model Signalement {
+  id         String   @id @default(uuid())
+  collecteId String
+  collecte   Collecte @relation(fields: [collecteId], references: [id])
+  reason     String   @db.Text
+  status     String   @default("PENDING") // PENDING, REVIEWED, DISMISSED
+  createdAt  DateTime @default(now())
+}

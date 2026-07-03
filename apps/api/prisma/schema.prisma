@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CollecteStatus {
+  PENDING
+  ACTIVE
+  CLOSED
+  REPORTED
+}
+
+enum Category {
+  SANTE
+  RELIGION
+  EDUCATION
+  SPORT
+  EVENEMENT
+  COTISATION
+  CADEAU
+  URGENCE
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  COMPLETED
+  REJECTED
+}
+
+enum KycStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model User {
+  id         String    @id @default(uuid())
+  phone      String    @unique // Format +221XXXXXXXXX
+  email      String?   @unique
+  firstName  String?
+  lastName   String?
+  country    String?   @default("Sénégal")
+  role       Role      @default(USER)
+  kycStatus     KycStatus @default(PENDING)
+  kycUrl        String?   // Document ID URL
+  permissions   String[]  @default([]) // Limites de l'admin
+  emailVerified Boolean   @default(false)
+  isBlocked     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  collectes     Collecte[]
+  retraits      Retrait[]
+  dons          Don[]
+  notifications Notification[]
+  sentTransfers     Transfer[] @relation("SentTransfers")
+  receivedTransfers Transfer[] @relation("ReceivedTransfers")
+  lastLoginIp       String?
+  lastLoginCity     String?
+  lastLoginAt       DateTime?
+  logs              ActivityLog[]
+  points            Int       @default(0)
+  referralCode      String?   @unique
+  referredById      String?
+  referredBy        User?     @relation("UserReferrals", fields: [referredById], references: [id])
+  referrals         User[]    @relation("UserReferrals")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
+
+model Transfer {
+  id          String   @id @default(uuid())
+  amountXof   Int
+  senderId    String
+  sender      User     @relation("SentTransfers", fields: [senderId], references: [id])
+  receiverId  String
+  receiver    User     @relation("ReceivedTransfers", fields: [receiverId], references: [id])
+  reason      String?
+  createdAt   DateTime @default(now())
+}
+
+model Collecte {
+  id                  String         @id @default(uuid())
+  userId              String
+  user                User           @relation(fields: [userId], references: [id])
+  slug                String         @unique
+  title               String         @db.VarChar(80)
+  description         String         @db.Text
+  category            Category
+  targetXof           Int            // Objective in XOF
+  collectedXof        Int            @default(0)
+  totalCommissionXof  Int            @default(0) // Total commissions prélevées sur cette collecte
+  endDate             DateTime
+  status              CollecteStatus @default(PENDING)
+  photoUrl            String?
+  verifiedBadge       Boolean        @default(false)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  
+  dons            Don[]
+  updates         Update[]
+  signalements    Signalement[]
+  retraits        Retrait[]
+  commissions     Commission[]
+}
+
+model Don {
+  id              String        @id @default(uuid())
+  collecteId      String
+  collecte        Collecte      @relation(fields: [collecteId], references: [id])
+  userId          String?       // Link to registered user if logged in
+  user            User?         @relation(fields: [userId], references: [id])
+  amountXof       Int           // Montant brut payé par le donateur
+  commissionXof   Int           @default(0) // Commission prélevée par Mbolo Pay
+  netAmountXof    Int           @default(0) // Montant net crédité à la collecte
+  paymentMethod   String        // wave, om, card
+  anonymous       Boolean       @default(false)
+  donorName       String?       // Optional name if not anonymous
+  status          PaymentStatus @default(PENDING)
+  transactionId   String?       @unique // From PayDunya
+  createdAt       DateTime      @default(now())
+  commission      Commission?   // Commission liée à ce don
+}
+
+model Commission {
+  id          String   @id @default(uuid())
+  donId       String   @unique
+  don         Don      @relation(fields: [donId], references: [id])
+  collecteId  String
+  collecte    Collecte @relation(fields: [collecteId], references: [id])
+  amountXof   Int      // Montant de la commission en XOF
+  rate        Float    // Taux appliqué (ex: 0.03 pour 3%)
+  createdAt   DateTime @default(now())
+}
+
+model Retrait {
+  id              String           @id @default(uuid())
+  collecteId      String
+  collecte        Collecte         @relation(fields: [collecteId], references: [id])
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  amountXof       Int
+  method          String           // wave, om, bank
+  status          WithdrawalStatus @default(PENDING)
+  processedAt     DateTime?
+  createdAt       DateTime         @default(now())
+}
+
+model Update {
+  id              String   @id @default(uuid())
+  collecteId      String
+  collecte        Collecte @relation(fields: [collecteId], references: [id])
+  content         String   @db.Text
+  createdAt       DateTime @default(now())
+}
+
+model Signalement {
+  id              String   @id @default(uuid())
+  collecteId      String
+  collecte        Collecte @relation(fields: [collecteId], references: [id])
+  reason          String   @db.Text
+  status          String   @default("PENDING") // PENDING, REVIEWED, DISMISSED
+  createdAt       DateTime @default(now())
+}
+
+enum NotificationType {
+  SMS
+  EMAIL
+  PUSH
+  WHATSAPP
+}
+
+model Notification {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id])
+  type            NotificationType
+  title           String
+  content         String           @db.Text
+  read            Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+}
+
+model Setting {
+  key   String @id
+  value String
+}

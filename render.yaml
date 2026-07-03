@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mbolopay-api
+    env: node
+    buildCommand: npm install && npm run build --workspace=apps/api
+    startCommand: npm run start:prod --workspace=apps/api
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # Ajouter ici toutes les variables d'environnement de apps/api/.env
+      # (DATABASE_URL, SUPABASE_URL, PAYDUNYA_MASTER_KEY, FIREBASE_PROJECT_ID, etc.)
